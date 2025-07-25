@@ -1,15 +1,13 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
 
-@dataclass
-class Sentence:
+class Sentence(BaseModel):
     start: int
     end: int
     text: str
 
 
-@dataclass
-class Word:
+class Word(BaseModel):
     start: int
     end: int
     text: str

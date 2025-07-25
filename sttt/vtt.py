@@ -15,8 +15,8 @@ def to_srt_string(chunks: list[Sentence]):
     return srt_str
 
 
-def to_vtt_string(chunks: list[Sentence]):
-    return "WEBVTT\n\n" + to_srt_string(chunks)
+def to_vtt_string(sentences: list[Sentence]):
+    return "WEBVTT\n\n" + to_srt_string(sentences)
 
 
 def to_vtt_time_string(ms: int):

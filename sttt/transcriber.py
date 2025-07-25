@@ -24,7 +24,6 @@ class Transcriber:
 
     def transcribe(self, file: str | BinaryIO | ndarray) -> list[Sentence]:
         segments = self.model.transcribe(file)
-        log.info("Transcribe audio")
         if self.relocation:
             return self._relocate_words(segments)
         else:

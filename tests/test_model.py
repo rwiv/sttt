@@ -2,8 +2,8 @@ import time
 from unittest import TestCase
 
 from sttt.model import SttModel
-from sttt.transcriber import Transcriber
 from sttt.phones import set_espeak_path
+from sttt.transcriber import Transcriber
 from sttt.vtt import to_vtt_string
 
 set_espeak_path()
@@ -38,8 +38,8 @@ class MyTests(TestCase):
 
         start = time.time()
         file_path = "../dev/test/assets/out.aac"
-        result = transcriber.transcribe(file_path)
+        sentences = transcriber.transcribe(file_path)
         print(f"{time.time() - start:.4f} sec")
 
-        vtt = to_vtt_string(result)
+        vtt = to_vtt_string(sentences)
         print(vtt)

@@ -1,5 +1,6 @@
 import os
-from dataclasses import dataclass, asdict
+
+from pydantic import BaseModel
 
 default_env = "dev"
 default_model_size = "base"
@@ -9,8 +10,7 @@ default_per_phone_ms = "100"
 default_relocation = "true"
 
 
-@dataclass
-class Env:
+class Env(BaseModel):
     py_env: str
     model_size: str
     compute_type: str
@@ -19,9 +19,6 @@ class Env:
     relocation: bool
     src_path: str
     dst_path: str
-
-    def to_dict(self):
-        return asdict(self)
 
 
 def get_env() -> Env:
