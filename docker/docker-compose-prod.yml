@@ -1,0 +1,22 @@
+services:
+  streaming-server:
+    image: sttt
+    container_name: sttt
+    environment:
+      PY_ENV: prod
+      MODEL_SIZE: large-v3
+      MODEL_COMPUTE_TYPE: int8
+      SEG_TERM_TIME_MS: "500"
+      SEG_PER_CHAR_MS: "50"
+      SEG_RELOCATION: "true"
+      APP_SRC_PATH: /mnt/volume/src
+      APP_DST_PATH: /mnt/volume/out
+    volumes:
+      - /volume1/nfs_main/sttt:/mnt/volume
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
