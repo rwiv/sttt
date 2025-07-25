@@ -7,12 +7,10 @@ from phonemizer.separator import Separator
 def phones_for_word(word: str):
     text = Punctuation(';:,.!"?()-').remove(word.lower())
     separator = Separator(phone=" ", word=None)  # type: ignore
-    p = phonemize(
-        text, language="en-us", backend="espeak", separator=separator, strip=True
-    )
-    if not isinstance(p, str):
-        raise ValueError(f"Invalid output type: {p}")
-    return p.split(" ")
+    phones = phonemize(text, language="en-us", backend="espeak", separator=separator, strip=True)
+    if not isinstance(phones, str):
+        raise ValueError(f"Invalid output type: {phones}")
+    return phones.split(" ")
 
 
 def set_espeak_path():

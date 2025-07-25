@@ -1,0 +1,9 @@
+{
+  "include": ["sttt", "tests"],
+  "exclude": ["**/node_modules", "**/__pycache__"],
+  "ignore": [],
+  "venvPath": ".",
+  "venv": ".venv",
+  "typeCheckingMode": "standard",
+  "reportInvalidTypeForm": "none"
+}

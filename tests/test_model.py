@@ -2,7 +2,11 @@ import time
 from unittest import TestCase
 
 from sttt.model import SttModel
+from sttt.transcriber import Transcriber
+from sttt.phones import set_espeak_path
 from sttt.vtt import to_vtt_string
+
+set_espeak_path()
 
 
 # pytest not working due to tqdm conflict
@@ -23,6 +27,9 @@ class MyTests(TestCase):
         model = SttModel(
             model_size=model_size,
             compute_type=compute_type,
+        )
+        transcriber = Transcriber(
+            model=model,
             term_time_ms=term_time_ms,
             per_phone_ms=per_char_ms,
             relocation=relocation,
@@ -31,7 +38,7 @@ class MyTests(TestCase):
 
         start = time.time()
         file_path = "../dev/test/assets/out.aac"
-        result = model.transcribe(file_path)
+        result = transcriber.transcribe(file_path)
         print(f"{time.time() - start:.4f} sec")
 
         vtt = to_vtt_string(result)
