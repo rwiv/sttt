@@ -3,7 +3,6 @@ import os
 from pydantic import BaseModel
 
 default_env = "dev"
-default_model_size = "base"
 default_compute_type = "int8"
 default_term_time_ms = "500"
 default_per_phone_ms = "100"
@@ -27,7 +26,7 @@ class Env(BaseModel):
 def get_env() -> Env:
     return Env(
         py_env=os.getenv("PY_ENV") or default_env,
-        model_size=os.getenv("MODEL_SIZE", default_model_size),
+        model_size=os.getenv("MODEL_SIZE") or None,  # type: ignore
         compute_type=os.getenv("MODEL_COMPUTE_TYPE", default_compute_type),
         term_time_ms=os.getenv("SEG_TERM_TIME_MS", default_term_time_ms),  # type: ignore
         per_phone_ms=os.getenv("SEG_PER_PHONE_MS", default_per_phone_ms),  # type: ignore

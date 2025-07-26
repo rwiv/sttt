@@ -1,33 +1,27 @@
 import math
-from typing import BinaryIO, Iterable
 
 from faster_whisper.transcribe import Segment
-from numpy import ndarray
 from phonemizer.backend import EspeakBackend
 from pyutils import log
 
-from .model import SttModel
-from ..utils import phones_for_word
 from ..common import Sentence, Word
+from ..utils import phones_for_word
 
 
 class Transcriber:
     def __init__(
         self,
-        model: SttModel,
         phone_backend: EspeakBackend,
         term_time_ms: int,
         per_phone_ms: int,
         relocation: bool,
     ):
-        self.model = model
         self.phone_backend = phone_backend
         self.term_time_ms = term_time_ms
         self.per_phone_ms = per_phone_ms
         self.relocation = relocation
 
-    def transcribe(self, file: str | BinaryIO | ndarray) -> list[Sentence]:
-        segments = self.model.transcribe(file)
+    def transcribe(self, segments: list[Segment]) -> list[Sentence]:
         if self.relocation:
             return self._relocate_words(segments)
         else:
@@ -41,7 +35,7 @@ class Transcriber:
                 result.append(sentence)
             return result
 
-    def _relocate_words(self, segments: Iterable[Segment]) -> list[Sentence]:
+    def _relocate_words(self, segments: list[Segment]) -> list[Sentence]:
         words = []
         for seg in segments:
             if seg.words is None:

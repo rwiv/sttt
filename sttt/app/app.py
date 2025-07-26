@@ -23,7 +23,6 @@ def run():
         compute_type=env.compute_type,
     )
     transcriber = Transcriber(
-        model=model,
         phone_backend=EspeakBackend("en-us"),
         term_time_ms=env.term_time_ms,
         per_phone_ms=env.per_phone_ms,
@@ -45,7 +44,13 @@ def run():
             for data in json.loads(read_file(src_file_path)):
                 sentences.append(Sentence(**data))
         else:
-            sentences = transcriber.transcribe(src_file_path)
+            segments = model.transcribe(src_file_path)
+            log.info("Transcribed audio")
+            # write_file(
+            #     path_join(env.dst_path, f"{stem(filename)}_seg.json"),
+            #     json.dumps([asdict(s) for s in segments], indent=2),
+            # )
+            sentences = transcriber.transcribe(segments)
             log.info("Transcribed sentences")
             write_file(
                 path_join(env.dst_path, f"{stem(filename)}.json"),

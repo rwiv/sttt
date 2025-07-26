@@ -3,10 +3,8 @@ from unittest import TestCase
 
 from phonemizer.backend import EspeakBackend
 
-from sttt.trans.model import SttModel
-from sttt.utils.phones import set_espeak_path
-from sttt.trans.transcriber import Transcriber
-from sttt.utils.webvtt import to_vtt_string
+from sttt.trans import SttModel, Transcriber
+from sttt.utils import set_espeak_path, to_vtt_string
 
 set_espeak_path()
 
@@ -31,7 +29,6 @@ class MyTests(TestCase):
             compute_type=compute_type,
         )
         transcriber = Transcriber(
-            model=model,
             phone_backend=EspeakBackend("en-us"),
             term_time_ms=term_time_ms,
             per_phone_ms=per_char_ms,
@@ -41,7 +38,8 @@ class MyTests(TestCase):
 
         start = time.time()
         file_path = "../dev/test/assets/out.aac"
-        sentences = transcriber.transcribe(file_path)
+        segments = model.transcribe(file_path)
+        sentences = transcriber.transcribe(segments)
         print(f"{time.time() - start:.4f} sec")
 
         vtt = to_vtt_string(sentences)

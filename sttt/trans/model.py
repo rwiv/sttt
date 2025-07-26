@@ -14,7 +14,9 @@ class SttModel:
         self.model = WhisperModel(model_size, device=device, compute_type=compute_type)
         log.info(f"Model loaded: {model_size}")
 
-    def transcribe(self, file: str | BinaryIO | ndarray) -> Iterable[Segment]:
-        segments, info = self.model.transcribe(file, word_timestamps=word_timestamps)
-        log.info("Transcribed audio")
-        return segments
+    def transcribe(self, file: str | BinaryIO | ndarray) -> list[Segment]:
+        segments, info = self.model.transcribe(file, language="en", word_timestamps=word_timestamps)
+        result = []
+        for seg in segments:
+            result.append(seg)
+        return result
