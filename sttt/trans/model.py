@@ -16,11 +16,11 @@ class SttModel:
         self.__compute_type = compute_type
         self.__batch_size = batch_size
 
-    def transcribe(self, audio_file_path: str) -> list[Segment]:
+    def transcribe(self, audio_file_path: str, language: str) -> list[Segment]:
         model = whisperx.load_model(self.__model_size, CUDA_DEVICE, compute_type=self.__compute_type)
         log.info("Load model")
         audio = whisperx.load_audio(audio_file_path)
-        result = model.transcribe(audio, batch_size=self.__batch_size)
+        result = model.transcribe(audio, language=language, batch_size=self.__batch_size)
 
         gc.collect()
         torch.cuda.empty_cache()

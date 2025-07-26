@@ -39,7 +39,7 @@ def run():
             for data in json.loads(read_file(src_file_path)):
                 sentences.append(Sentence(**data))
         else:
-            segments = model.transcribe(src_file_path)
+            segments = model.transcribe(audio_file_path=src_file_path, language="en")
             log.info("Transcribed audio")
             # write_file(
             #     path_join(env.dst_path, f"{stem(filename)}_seg.json"),

@@ -46,7 +46,7 @@ class MyTests(TestCase):
 
         start = time.time()
         file_path = "../dev/test/assets/out.aac"
-        segments = model.transcribe(file_path)
+        segments = model.transcribe(audio_file_path=file_path, language="en")
         sentences = transcriber.transcribe(segments)
         print(f"{time.time() - start:.4f} sec")
 
