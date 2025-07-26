@@ -1,4 +1,4 @@
-from sttt.phones import phones_for_word, set_espeak_path
+from sttt.utils.phones import phones_for_word, set_espeak_path
 
 set_espeak_path()
 

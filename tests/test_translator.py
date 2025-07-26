@@ -1,5 +1,5 @@
-from sttt.schema import Sentence
-from sttt.translator import Translator
+from sttt.trans.schema import Sentence
+from sttt.trans.translator import Translator
 
 tsvc_base_url = ""
 

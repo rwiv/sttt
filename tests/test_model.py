@@ -1,10 +1,10 @@
 import time
 from unittest import TestCase
 
-from sttt.model import SttModel
-from sttt.phones import set_espeak_path
-from sttt.transcriber import Transcriber
-from sttt.vtt import to_vtt_string
+from sttt.trans.model import SttModel
+from sttt.utils.phones import set_espeak_path
+from sttt.trans.transcriber import Transcriber
+from sttt.utils.webvtt import to_vtt_string
 
 set_espeak_path()
 

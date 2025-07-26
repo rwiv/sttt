@@ -6,7 +6,7 @@ from numpy import ndarray
 from pyutils import log
 
 from .model import SttModel
-from .phones import phones_for_word
+from sttt.utils import phones_for_word
 from .schema import Sentence, Word
 
 

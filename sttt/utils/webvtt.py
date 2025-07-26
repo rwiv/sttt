@@ -1,4 +1,4 @@
-from .schema import Sentence
+from sttt.trans.schema import Sentence
 
 
 def to_srt_chunk_string(seg: Sentence, num: int) -> str:

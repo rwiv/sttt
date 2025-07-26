@@ -4,11 +4,8 @@ import os
 from pyutils import log, stem, path_join, read_file, write_file
 
 from .env import get_env
-from .model import SttModel
-from .schema import Sentence
-from .transcriber import Transcriber
-from .translator import Translator
-from .vtt import to_vtt_string
+from .trans import SttModel, Sentence, Transcriber, Translator
+from .utils import to_vtt_string
 
 
 def run():
