@@ -1,12 +1,15 @@
 import time
 from unittest import TestCase
 
-from phonemizer.backend import EspeakBackend
+from pyutils import load_dotenv, path_join, find_project_root
 
+from sttt.app import get_env
 from sttt.trans import SttModel, Transcriber
-from sttt.utils import set_espeak_path, to_vtt_string
+from sttt.utils import to_vtt_string
 
-set_espeak_path()
+load_dotenv(path_join(find_project_root(), "dev", ".env"))
+
+env = get_env()
 
 
 # pytest not working due to tqdm conflict
@@ -15,8 +18,8 @@ class MyTests(TestCase):
         print()
         start = time.time()
 
-        # model_size = "base"
-        model_size = "turbo"
+        model_size = "base"
+        # model_size = "turbo"
         # model_size = "large-v3"
         # compute_type = "int8"
         compute_type = "float16"
@@ -27,16 +30,17 @@ class MyTests(TestCase):
         # term_time_ms = 700
         relocation = True
         # relocation = False
-        per_char_ms = 50
+        per_phone_ms = 50
+
         model = SttModel(
             model_size=model_size,
             compute_type=compute_type,
             batch_size=batch_size,
+            hf_token=env.model_hf_token,
         )
         transcriber = Transcriber(
-            phone_backend=EspeakBackend("en-us"),
             term_time_ms=term_time_ms,
-            per_phone_ms=per_char_ms,
+            per_phone_ms=per_phone_ms,
             relocation=relocation,
         )
         print(f"{time.time() - start:.4f} sec")

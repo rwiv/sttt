@@ -1,6 +1,7 @@
 import sys
 
 from .app import run
+from .env import get_env
 
 targets = [
     "app",
