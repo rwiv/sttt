@@ -1,5 +1,6 @@
 import math
 from typing import BinaryIO, Iterable
+
 from faster_whisper.transcribe import Segment
 from numpy import ndarray
 from pyutils import log

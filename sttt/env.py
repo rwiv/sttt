@@ -19,16 +19,12 @@ class Env(BaseModel):
     relocation: bool
     src_path: str
     dst_path: str
+    tsvc_base_url: str
+    ts_batch_size: int
+    ts_first: bool
 
 
 def get_env() -> Env:
-    src_path = os.getenv("APP_SRC_PATH")
-    if not src_path:
-        raise ValueError("APP_SRC_PATH is required")
-    dst_path = os.getenv("APP_DST_PATH")
-    if not dst_path:
-        raise ValueError("APP_DST_PATH is required")
-
     return Env(
         py_env=os.getenv("PY_ENV") or default_env,
         model_size=os.getenv("MODEL_SIZE", default_model_size),
@@ -36,6 +32,9 @@ def get_env() -> Env:
         term_time_ms=int(os.getenv("SEG_TERM_TIME_MS", default_term_time_ms)),
         per_phone_ms=int(os.getenv("SEG_PER_PHONE_MS", default_per_phone_ms)),
         relocation=os.getenv("SEG_RELOCATION", default_relocation).lower() == "true",
-        src_path=src_path,
-        dst_path=dst_path,
+        src_path=os.getenv("APP_SRC_PATH") or None,  # type: ignore
+        dst_path=os.getenv("APP_DST_PATH") or None,  # type: ignore
+        tsvc_base_url=os.getenv("TSVC_BASE_URL") or None,  # type: ignore
+        ts_batch_size=os.getenv("TS_BATCH_SIZE"),  # type: ignore
+        ts_first=os.getenv("TS_FIRST") == "true",
     )

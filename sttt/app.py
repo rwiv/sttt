@@ -1,12 +1,13 @@
 import json
-import os.path
+import os
 
-from pyutils import log
+from pyutils import log, stem, path_join, read_file, write_file
 
 from .env import get_env
 from .model import SttModel
 from .schema import Sentence
 from .transcriber import Transcriber
+from .translator import Translator
 from .vtt import to_vtt_string
 
 
@@ -24,24 +25,31 @@ def run():
         per_phone_ms=env.per_phone_ms,
         relocation=env.relocation,
     )
+    translator = Translator(
+        tsvc_base_url=env.tsvc_base_url,
+        batch_size=env.ts_batch_size,
+        ts_first=env.ts_first,
+    )
 
     os.makedirs(env.dst_path, exist_ok=True)
     for filename in os.listdir(env.src_path):
-        src_file_path = os.path.join(env.src_path, filename)
-        out_file_path = os.path.join(env.dst_path, f"{os.path.splitext(filename)[0]}.vtt")
+        src_file_path = path_join(env.src_path, filename)
 
         if filename.endswith(".json"):
-            with open(src_file_path, "r") as f:
-                sentences: list[Sentence] = []
-                for data in json.loads(f.read()):
-                    sentences.append(Sentence(**data))
+            read_file(src_file_path)
+            sentences: list[Sentence] = []
+            for data in json.loads(read_file(src_file_path)):
+                sentences.append(Sentence(**data))
         else:
             sentences = transcriber.transcribe(src_file_path)
-            with open(out_file_path, "w") as f:
-                f.write(json.dumps([s.model_dump(mode="json") for s in sentences], indent=2))
+            write_file(
+                path_join(env.dst_path, f"{stem(filename)}.json"),
+                json.dumps([s.model_dump(mode="json") for s in sentences], indent=2),
+            )
 
-        vtt = to_vtt_string(sentences)
-        with open(out_file_path, "w") as f:
-            f.write(vtt)
+        write_file(path_join(env.dst_path, f"{stem(filename)}_src.vtt"), to_vtt_string(sentences))
+        translated, merged = translator.translate(sentences)
+        write_file(path_join(env.dst_path, f"{stem(filename)}_ts.vtt"), to_vtt_string(translated))
+        write_file(path_join(env.dst_path, f"{stem(filename)}_merge.vtt"), to_vtt_string(merged))
 
-        log.info(f"Generated {out_file_path}")
+        log.info(f"Complete {filename}")
