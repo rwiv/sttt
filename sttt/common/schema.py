@@ -15,12 +15,6 @@ class Word(BaseModel):
     is_last: bool
     score: float
 
-    def first_is_upper(self) -> bool:
-        return self.is_first and len(self.text.strip()) > 0 and self.text.strip()[0].isupper()
-
-    def is_last_in_sentence(self):
-        return self.text.strip().endswith((".", "?", "!"))
-
 
 class Segment(BaseModel):
     start: int

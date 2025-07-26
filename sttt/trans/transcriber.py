@@ -37,7 +37,7 @@ class Transcriber:
 
             tmp_words.append(word)
 
-            if word.is_last or word.is_last_in_sentence():
+            if word.is_last or word.text.strip().endswith((".", "?", "!")):
                 sentences.append(merge_words(tmp_words))
                 tmp_words = []
 
