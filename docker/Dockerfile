@@ -7,6 +7,8 @@ COPY sttt sttt
 RUN apt-get update
 RUN apt-get install -y python3 python3-pip
 RUN apt-get install -y libcudnn8
+RUN apt-get install -y espeak-ng
+
 
 RUN pip install torch==2.7.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cu126
 RUN pip install -r requirements.txt

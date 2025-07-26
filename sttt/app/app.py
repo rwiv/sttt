@@ -1,17 +1,22 @@
 import json
 import os
+import sys
 
+from phonemizer.backend import EspeakBackend
 from pyutils import log, stem, path_join, read_file, write_file
 
 from .env import get_env
 from ..common import Sentence, Segment
 from ..trans import SttModel, Transcriber, Translator
-from ..utils import to_vtt_string
+from ..utils import to_vtt_string, set_espeak_path
 
 
 def run():
     env = get_env()
     log.info("Environment loaded", env.model_dump(mode="json"))
+
+    if sys.platform.startswith("win"):
+        set_espeak_path()
 
     model = SttModel(
         model_size=env.model_size,
@@ -19,6 +24,7 @@ def run():
         batch_size=env.model_batch_size,
     )
     transcriber = Transcriber(
+        phone_backend=EspeakBackend("en-us"),
         term_time_ms=env.term_time_ms,
         per_phone_ms=env.per_phone_ms,
         relocation=env.relocation,

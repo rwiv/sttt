@@ -1,12 +1,14 @@
 import time
 from unittest import TestCase
 
+from phonemizer.backend import EspeakBackend
 from pyutils import load_dotenv, path_join, find_project_root
 
 from sttt.app import get_env
 from sttt.trans import SttModel, Transcriber
-from sttt.utils import to_vtt_string
+from sttt.utils import to_vtt_string, set_espeak_path
 
+set_espeak_path()
 load_dotenv(path_join(find_project_root(), "dev", ".env"))
 
 env = get_env()
@@ -30,7 +32,7 @@ class MyTests(TestCase):
         # term_time_ms = 700
         # relocation = True
         relocation = False
-        per_phone_ms = 50
+        per_phone_ms = 100
 
         model = SttModel(
             model_size=model_size,
@@ -38,6 +40,7 @@ class MyTests(TestCase):
             batch_size=batch_size,
         )
         transcriber = Transcriber(
+            phone_backend=EspeakBackend("en-us"),
             term_time_ms=term_time_ms,
             per_phone_ms=per_phone_ms,
             relocation=relocation,

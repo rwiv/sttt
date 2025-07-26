@@ -1,5 +1,6 @@
 import sys
 
+from .phones import phones_for_word, set_espeak_path
 from .webvtt import to_vtt_string
 
 targets = [
