@@ -15,7 +15,6 @@ class Env(BaseModel):
     model_size: str
     model_compute_type: str
     model_batch_size: int
-    model_hf_token: str
     term_time_ms: int
     per_phone_ms: int
     relocation: bool
@@ -32,7 +31,6 @@ def get_env() -> Env:
         model_size=os.getenv("MODEL_SIZE") or None,  # type: ignore
         model_compute_type=os.getenv("MODEL_COMPUTE_TYPE", default_model_compute_type),
         model_batch_size=os.getenv("MODEL_BATCH_SIZE", default_model_batch_size),  # type: ignore
-        model_hf_token=os.getenv("MODEL_HF_TOKEN") or None,  # type: ignore
         term_time_ms=os.getenv("SEG_TERM_TIME_MS", default_term_time_ms),  # type: ignore
         per_phone_ms=os.getenv("SEG_PER_PHONE_MS", default_per_phone_ms),  # type: ignore
         relocation=os.getenv("SEG_RELOCATION", default_relocation).lower() == "true",

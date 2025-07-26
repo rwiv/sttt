@@ -11,11 +11,10 @@ CUDA_DEVICE = "cuda"
 
 
 class SttModel:
-    def __init__(self, model_size: str, compute_type: str, batch_size: int, hf_token: str):
+    def __init__(self, model_size: str, compute_type: str, batch_size: int):
         self.__model_size = model_size
         self.__compute_type = compute_type
         self.__batch_size = batch_size
-        self.__hf_token = hf_token
 
     def transcribe(self, audio_file_path: str) -> list[Segment]:
         model = whisperx.load_model(self.__model_size, CUDA_DEVICE, compute_type=self.__compute_type)

@@ -17,7 +17,6 @@ def run():
         model_size=env.model_size,
         compute_type=env.model_compute_type,
         batch_size=env.model_batch_size,
-        hf_token=env.model_hf_token,
     )
     transcriber = Transcriber(
         term_time_ms=env.term_time_ms,

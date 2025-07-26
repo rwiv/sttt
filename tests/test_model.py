@@ -36,7 +36,6 @@ class MyTests(TestCase):
             model_size=model_size,
             compute_type=compute_type,
             batch_size=batch_size,
-            hf_token=env.model_hf_token,
         )
         transcriber = Transcriber(
             term_time_ms=term_time_ms,
