@@ -1,4 +1,4 @@
-from sttt.trans.schema import Sentence
+from sttt.common.schema import Sentence
 from sttt.trans.translator import Translator
 
 tsvc_base_url = ""

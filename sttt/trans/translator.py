@@ -3,7 +3,7 @@ import asyncio
 import aiohttp
 from pyutils import sublist
 
-from .schema import Sentence
+from ..common import Sentence
 
 
 class Translator:

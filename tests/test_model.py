@@ -1,6 +1,8 @@
 import time
 from unittest import TestCase
 
+from phonemizer.backend import EspeakBackend
+
 from sttt.trans.model import SttModel
 from sttt.utils.phones import set_espeak_path
 from sttt.trans.transcriber import Transcriber
@@ -30,6 +32,7 @@ class MyTests(TestCase):
         )
         transcriber = Transcriber(
             model=model,
+            phone_backend=EspeakBackend("en-us"),
             term_time_ms=term_time_ms,
             per_phone_ms=per_char_ms,
             relocation=relocation,

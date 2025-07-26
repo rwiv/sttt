@@ -2,10 +2,12 @@ import json
 import os
 import sys
 
+from phonemizer.backend import EspeakBackend
 from pyutils import log, stem, path_join, read_file, write_file
 
 from .env import get_env
-from ..trans import SttModel, Sentence, Transcriber, Translator
+from ..common import Sentence
+from ..trans import SttModel, Transcriber, Translator
 from ..utils import to_vtt_string, set_espeak_path
 
 
@@ -22,6 +24,7 @@ def run():
     )
     transcriber = Transcriber(
         model=model,
+        phone_backend=EspeakBackend("en-us"),
         term_time_ms=env.term_time_ms,
         per_phone_ms=env.per_phone_ms,
         relocation=env.relocation,
@@ -43,6 +46,7 @@ def run():
                 sentences.append(Sentence(**data))
         else:
             sentences = transcriber.transcribe(src_file_path)
+            log.info("Transcribed sentences")
             write_file(
                 path_join(env.dst_path, f"{stem(filename)}.json"),
                 json.dumps([s.model_dump(mode="json") for s in sentences], indent=2),

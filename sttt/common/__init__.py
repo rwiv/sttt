@@ -1,14 +1,9 @@
 import sys
 
-from .model import SttModel
-from .transcriber import Transcriber
-from .translator import Translator
+from .schema import Sentence, Word
 
 targets = [
-    "model",
     "schema",
-    "transcriber",
-    "translator",
 ]
 for name in list(sys.modules.keys()):
     for target in targets:

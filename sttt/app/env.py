@@ -29,8 +29,8 @@ def get_env() -> Env:
         py_env=os.getenv("PY_ENV") or default_env,
         model_size=os.getenv("MODEL_SIZE", default_model_size),
         compute_type=os.getenv("MODEL_COMPUTE_TYPE", default_compute_type),
-        term_time_ms=int(os.getenv("SEG_TERM_TIME_MS", default_term_time_ms)),
-        per_phone_ms=int(os.getenv("SEG_PER_PHONE_MS", default_per_phone_ms)),
+        term_time_ms=os.getenv("SEG_TERM_TIME_MS", default_term_time_ms),  # type: ignore
+        per_phone_ms=os.getenv("SEG_PER_PHONE_MS", default_per_phone_ms),  # type: ignore
         relocation=os.getenv("SEG_RELOCATION", default_relocation).lower() == "true",
         src_path=os.getenv("APP_SRC_PATH") or None,  # type: ignore
         dst_path=os.getenv("APP_DST_PATH") or None,  # type: ignore

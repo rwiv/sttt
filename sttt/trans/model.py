@@ -16,5 +16,5 @@ class SttModel:
 
     def transcribe(self, file: str | BinaryIO | ndarray) -> Iterable[Segment]:
         segments, info = self.model.transcribe(file, word_timestamps=word_timestamps)
-        log.info("Transcribe audio")
+        log.info("Transcribed audio")
         return segments

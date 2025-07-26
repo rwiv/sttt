@@ -3,22 +3,25 @@ from typing import BinaryIO, Iterable
 
 from faster_whisper.transcribe import Segment
 from numpy import ndarray
+from phonemizer.backend import EspeakBackend
 from pyutils import log
 
 from .model import SttModel
-from sttt.utils import phones_for_word
-from .schema import Sentence, Word
+from ..utils import phones_for_word
+from ..common import Sentence, Word
 
 
 class Transcriber:
     def __init__(
         self,
         model: SttModel,
+        phone_backend: EspeakBackend,
         term_time_ms: int,
         per_phone_ms: int,
         relocation: bool,
     ):
         self.model = model
+        self.phone_backend = phone_backend
         self.term_time_ms = term_time_ms
         self.per_phone_ms = per_phone_ms
         self.relocation = relocation
@@ -78,7 +81,8 @@ class Transcriber:
     def _check_term_time(self, words: list[Word], idx: int) -> bool:
         if idx == 0:
             return False
-        est_pron_time = len(phones_for_word(words[idx].text.strip())) * self.per_phone_ms
+        phones = phones_for_word(self.phone_backend, words[idx].text.strip())
+        est_pron_time = len(phones) * self.per_phone_ms
         remaining_time = words[idx].end - words[idx - 1].end - est_pron_time
         return remaining_time > self.term_time_ms
 
