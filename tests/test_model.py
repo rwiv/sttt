@@ -15,10 +15,14 @@ class MyTests(TestCase):
         print()
         start = time.time()
 
+        # model_size = "base"
         model_size = "turbo"
         # model_size = "large-v3"
-        compute_type = "int8"
-        # compute_type = "float16"
+        # compute_type = "int8"
+        compute_type = "float16"
+        # batch_size = 8
+        batch_size = 16
+
         term_time_ms = 500
         # term_time_ms = 700
         relocation = True
@@ -27,6 +31,7 @@ class MyTests(TestCase):
         model = SttModel(
             model_size=model_size,
             compute_type=compute_type,
+            batch_size=batch_size,
         )
         transcriber = Transcriber(
             phone_backend=EspeakBackend("en-us"),

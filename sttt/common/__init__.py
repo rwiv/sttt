@@ -1,6 +1,6 @@
 import sys
 
-from .schema import Sentence, Word
+from .schema import Sentence, Word, Segment
 
 targets = [
     "schema",

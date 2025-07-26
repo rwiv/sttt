@@ -1,10 +1,8 @@
 import math
 
-from faster_whisper.transcribe import Segment
 from phonemizer.backend import EspeakBackend
-from pyutils import log
 
-from ..common import Sentence, Word
+from ..common import Sentence, Word, Segment
 from ..utils import phones_for_word
 
 
@@ -38,17 +36,7 @@ class Transcriber:
     def _relocate_words(self, segments: list[Segment]) -> list[Sentence]:
         words = []
         for seg in segments:
-            if seg.words is None:
-                log.warn(f"No words found in segment: {seg.text}")
-                continue
-            for idx, raw_word in enumerate(seg.words):
-                word = Word(
-                    start=math.floor(raw_word.start * 1000),
-                    end=math.floor(raw_word.end * 1000),
-                    text=raw_word.word,
-                    is_first=idx == 0,
-                    is_last=idx == len(seg.words) - 1,
-                )
+            for word in seg.words:
                 words.append(word)
 
         if len(words) == 0:
@@ -85,5 +73,5 @@ def merge_words(words: list[Word]) -> Sentence:
     return Sentence(
         start=words[0].start,
         end=words[-1].end,
-        text="".join([seg.text for seg in words]).strip(),
+        text=" ".join([seg.text for seg in words]).strip(),
     )

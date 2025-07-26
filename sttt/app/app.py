@@ -20,7 +20,8 @@ def run():
 
     model = SttModel(
         model_size=env.model_size,
-        compute_type=env.compute_type,
+        compute_type=env.model_compute_type,
+        batch_size=env.model_batch_size,
     )
     transcriber = Transcriber(
         phone_backend=EspeakBackend("en-us"),
