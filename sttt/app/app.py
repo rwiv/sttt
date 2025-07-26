@@ -38,18 +38,21 @@ def run():
     os.makedirs(env.dst_path, exist_ok=True)
     for filename in os.listdir(env.src_path):
         src_file_path = path_join(env.src_path, filename)
+        out_filename = filename
 
         if filename.endswith("_sent.json"):
+            out_filename = filename.replace("_sent.json", ".json")
             sentences: list[Sentence] = []
             for data in json.loads(read_file(src_file_path)):
                 sentences.append(Sentence(**data))
         elif filename.endswith("_seg.json"):
+            out_filename = filename.replace("_seg.json", ".json")
             segments: list[Segment] = []
             for data in json.loads(read_file(src_file_path)):
                 segments.append(Segment(**data))
             sentences = transcriber.transcribe(segments)
             write_file(
-                path_join(env.dst_path, filename.replace("_seg.json", "_sent.json")),
+                path_join(env.dst_path, f"{stem(out_filename)}._sent.json"),
                 json.dumps([s.model_dump(mode="json") for s in sentences], indent=2),
             )
         else:
@@ -65,9 +68,9 @@ def run():
                 json.dumps([s.model_dump(mode="json") for s in sentences], indent=2),
             )
 
-        write_file(path_join(env.dst_path, f"{stem(filename)}_src.vtt"), to_vtt_string(sentences))
+        write_file(path_join(env.dst_path, f"{stem(out_filename)}_src.vtt"), to_vtt_string(sentences))
         translated, merged = translator.translate(sentences)
-        write_file(path_join(env.dst_path, f"{stem(filename)}_ts.vtt"), to_vtt_string(translated))
-        write_file(path_join(env.dst_path, f"{stem(filename)}_merge.vtt"), to_vtt_string(merged))
+        write_file(path_join(env.dst_path, f"{stem(out_filename)}_ts.vtt"), to_vtt_string(translated))
+        write_file(path_join(env.dst_path, f"{stem(out_filename)}_merge.vtt"), to_vtt_string(merged))
 
         log.info(f"Complete {filename}")
