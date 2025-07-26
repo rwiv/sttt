@@ -42,12 +42,13 @@ class SttModel:
                     is_last=idx == len(raw_words) - 1,
                 )
                 words.append(word)
-            seg = Segment(
-                start=math.floor(raw_seg["start"] * 1000),
-                end=math.floor(raw_seg["end"] * 1000),
-                text=raw_seg["text"],
-                words=words,
-            )
+            seg_start = math.floor(raw_seg["start"] * 1000)
+            if seg_start != words[0].start:
+                log.warn(f"Segment start mismatch: {seg_start} != {words[0].start}")
+            seg_end = math.floor(raw_seg["end"] * 1000)
+            if seg_end != words[-1].end:
+                log.warn(f"Segment end mismatch: {seg_end} != {words[-1].end}")
+            seg = Segment(start=seg_start, end=seg_end, text=raw_seg["text"], words=words)
             segments.append(seg)
 
         gc.collect()

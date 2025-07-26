@@ -18,15 +18,7 @@ class Transcriber:
         if self.relocation:
             return self.__relocate_words(segments)
         else:
-            result = []
-            for seg in segments:
-                sentence = Sentence(
-                    start=math.floor(seg.start * 1000),
-                    end=math.floor(seg.end * 1000),
-                    text=seg.text.strip(),
-                )
-                result.append(sentence)
-            return result
+            return [Sentence(start=s.start, end=s.end, text=s.text.strip()) for s in segments]
 
     def __relocate_words(self, segments: list[Segment]) -> list[Sentence]:
         words = []

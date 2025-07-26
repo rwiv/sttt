@@ -28,8 +28,8 @@ class MyTests(TestCase):
 
         term_time_ms = 500
         # term_time_ms = 700
-        relocation = True
-        # relocation = False
+        # relocation = True
+        relocation = False
         per_phone_ms = 50
 
         model = SttModel(
