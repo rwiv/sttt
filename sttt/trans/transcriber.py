@@ -1,5 +1,3 @@
-import math
-
 from ..common import Sentence, Word, Segment
 
 
@@ -33,11 +31,13 @@ class Transcriber:
         tmp_words: list[Word] = []
         for idx, word in enumerate(words):
             if len(tmp_words) > 0:
-                if self.__check_term_time(words, idx) or word.first_is_upper():
+                if word.is_first or self.__check_term_time(words, idx):
                     sentences.append(merge_words(tmp_words))
                     tmp_words = []
+
             tmp_words.append(word)
-            if word.is_last_in_sentence():
+
+            if word.is_last or word.is_last_in_sentence():
                 sentences.append(merge_words(tmp_words))
                 tmp_words = []
 

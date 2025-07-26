@@ -4,7 +4,7 @@ import os
 from pyutils import log, stem, path_join, read_file, write_file
 
 from .env import get_env
-from ..common import Sentence
+from ..common import Sentence, Segment
 from ..trans import SttModel, Transcriber, Translator
 from ..utils import to_vtt_string
 
@@ -33,22 +33,29 @@ def run():
     for filename in os.listdir(env.src_path):
         src_file_path = path_join(env.src_path, filename)
 
-        if filename.endswith(".json"):
-            read_file(src_file_path)
+        if filename.endswith("_sent.json"):
             sentences: list[Sentence] = []
             for data in json.loads(read_file(src_file_path)):
                 sentences.append(Sentence(**data))
+        elif filename.endswith("_seg.json"):
+            segments: list[Segment] = []
+            for data in json.loads(read_file(src_file_path)):
+                segments.append(Segment(**data))
+            sentences = transcriber.transcribe(segments)
+            write_file(
+                path_join(env.dst_path, filename.replace("_seg.json", "_sent.json")),
+                json.dumps([s.model_dump(mode="json") for s in sentences], indent=2),
+            )
         else:
             segments = model.transcribe(audio_file_path=src_file_path, language="en")
-            log.info("Transcribed audio")
-            # write_file(
-            #     path_join(env.dst_path, f"{stem(filename)}_seg.json"),
-            #     json.dumps([asdict(s) for s in segments], indent=2),
-            # )
-            sentences = transcriber.transcribe(segments)
-            log.info("Transcribed sentences")
+            log.info(f"Transcribed audio: {filename}")
             write_file(
-                path_join(env.dst_path, f"{stem(filename)}.json"),
+                path_join(env.dst_path, f"{stem(filename)}_seg.json"),
+                json.dumps([s.model_dump(mode="json") for s in segments], indent=2),
+            )
+            sentences = transcriber.transcribe(segments)
+            write_file(
+                path_join(env.dst_path, f"{stem(filename)}_sent.json"),
                 json.dumps([s.model_dump(mode="json") for s in sentences], indent=2),
             )
 
