@@ -15,6 +15,12 @@ class Word(BaseModel):
     is_last: bool
     score: float
 
+    def check_last(self):
+        return self.is_last or self.exists_last_prefix()
+
+    def exists_last_prefix(self):
+        return self.text.strip().endswith((".", "?", "!"))
+
 
 class Segment(BaseModel):
     start: int

@@ -41,4 +41,4 @@ def to_vtt_time_string(ms: int):
     hour_string = str(hour).zfill(2)
     minute_string = str(minute).zfill(2)
 
-    return f"{hour_string}:{minute_string}:{left},{right}"
+    return f"{hour_string}:{minute_string}:{left}.{right}"

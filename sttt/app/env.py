@@ -5,9 +5,8 @@ from pydantic import BaseModel
 default_env = "dev"
 default_model_compute_type = "int8"
 default_model_batch_size = "8"
-default_term_time_ms = "600"
-default_per_phone_ms = "100"
-default_relocation = "true"
+default_word_gap_threshold_ms = "600"
+default_phones_per_ms = "100"
 default_source_language = "en"
 
 
@@ -16,10 +15,14 @@ class Env(BaseModel):
     model_size: str
     model_compute_type: str
     model_batch_size: int
-    term_time_ms: int
-    per_phone_ms: int
-    relocation: bool
+
+    seg_relocation: bool
+    word_gap_threshold_ms: int
+    phones_check: bool
+    phones_per_ms: int
+
     source_language: str
+
     src_path: str
     dst_path: str
     tsvc_base_url: str
@@ -33,9 +36,10 @@ def get_env() -> Env:
         model_size=os.getenv("MODEL_SIZE") or None,  # type: ignore
         model_compute_type=os.getenv("MODEL_COMPUTE_TYPE", default_model_compute_type),
         model_batch_size=os.getenv("MODEL_BATCH_SIZE", default_model_batch_size),  # type: ignore
-        term_time_ms=os.getenv("SEG_TERM_TIME_MS", default_term_time_ms),  # type: ignore
-        per_phone_ms=os.getenv("SEG_PER_PHONE_MS", default_per_phone_ms),  # type: ignore
-        relocation=os.getenv("SEG_RELOCATION", default_relocation).lower() == "true",
+        seg_relocation=os.getenv("SEG_RELOCATION") == "true",
+        word_gap_threshold_ms=os.getenv("WORD_GAP_THRESHOLD_MS", default_word_gap_threshold_ms),  # type: ignore
+        phones_check=os.getenv("PHONES_CHECK") == "true",
+        phones_per_ms=os.getenv("PHONES_PER_MS", default_phones_per_ms),  # type: ignore
         source_language=os.getenv("SOURCE_LANGUAGE", default_source_language),
         src_path=os.getenv("APP_SRC_PATH") or None,  # type: ignore
         dst_path=os.getenv("APP_DST_PATH") or None,  # type: ignore

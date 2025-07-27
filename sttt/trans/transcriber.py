@@ -8,14 +8,16 @@ class Transcriber:
     def __init__(
         self,
         phone_backend: EspeakBackend,
-        term_time_ms: int,
+        word_gap_threshold_ms: int,
         per_phone_ms: int,
         relocation: bool,
+        check_phones: bool,
     ):
         self.phone_backend = phone_backend
-        self.term_time_ms = term_time_ms
+        self.word_gap_threshold_ms = word_gap_threshold_ms
         self.per_phone_ms = per_phone_ms
         self.relocation = relocation
+        self.check_phones = check_phones
 
     def transcribe(self, segments: list[Segment]) -> list[Sentence]:
         if self.relocation:
@@ -36,32 +38,57 @@ class Transcriber:
         tmp_words: list[Word] = []
         for idx, word in enumerate(words):
             if len(tmp_words) > 0:
-                if word.is_first or self.__check_term_time(words, idx):
+                if word.is_first or self.__check_gap_time(words, idx, True):
+                    sentences.append(merge_words(tmp_words))
+                    tmp_words = []
+                elif self.check_phones and self.__check_gap_time_by_phones(words, idx):
                     sentences.append(merge_words(tmp_words))
                     tmp_words = []
 
             tmp_words.append(word)
 
-            if word.is_last or word.text.strip().endswith((".", "?", "!")):
+            if word.check_last() or self.__check_gap_time(words, idx, False):
                 sentences.append(merge_words(tmp_words))
                 tmp_words = []
 
         return sentences
 
-    def __check_term_time(self, words: list[Word], idx: int) -> bool:
+    def __check_gap_time_by_phones(self, words: list[Word], idx: int) -> bool:
         """
         현재 word와 이전 word 사이 빈 시간이 term_time_ms를 초과하는지 체크하는 함수.
         최초 sentence인지 체크하기 위한 목적으로 사용한다.
-        whisper는 전사한 sentence 앞에 empty_time을 포함할 수 있기에 단순히 cur.start - prev.end로 단어 간 대기 시간을 체크할 수 없다
-        따라서 예상 발음 시간을 구한 뒤 `cur.end - prev.end - 예상 발음 시간`을 통해 대기 시간을 추정한다
+        whisper는 전사한 sentence 앞/뒤에 빈 시간을 포함할 수 있기에 단순히 cur.start - prev.end로 단어 간 대기 시간을 체크할 수 없다.
+        따라서 예상 발음 시간을 구한 뒤 `cur.end - prev.end - 예상 발음 시간`을 통해 대기 시간을 추정한다.
+        문장 마지막 단어의 경우 후미에 빈 시간이 포함될 수 있기에 스킵한다.
         |-e-|-p-|-e-|   (0~?ms)   |-e-|-p-|-e-|
         """
+        cur = words[idx]
+        if idx == 0 or cur.check_last():
+            return False
+
+        phones = phones_for_word(self.phone_backend, cur.text.strip())
+        est_pron_time = len(phones) * self.per_phone_ms
+        remaining_time = cur.end - words[idx - 1].end - est_pron_time
+        return remaining_time > self.word_gap_threshold_ms
+
+    def __check_gap_time(self, words: list[Word], idx: int, is_first: bool) -> bool:
+        cur = words[idx]
+        last_idx = len(words) - 1
         if idx == 0:
             return False
-        phones = phones_for_word(self.phone_backend, words[idx].text.strip())
-        est_pron_time = len(phones) * self.per_phone_ms
-        remaining_time = words[idx].end - words[idx - 1].end - est_pron_time
-        return remaining_time > self.term_time_ms
+
+        if is_first:
+            if cur.check_last():
+                return False
+            prev = words[idx - 1]
+            return cur.start - prev.end > self.word_gap_threshold_ms
+        else:
+            if cur.is_first:
+                return False
+            if idx == last_idx:
+                return True
+            nxt = words[idx + 1]
+            return nxt.start - cur.end > self.word_gap_threshold_ms
 
 
 def merge_words(words: list[Word]) -> Sentence:

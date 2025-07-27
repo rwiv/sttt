@@ -28,7 +28,7 @@ class MyTests(TestCase):
         # batch_size = 8
         batch_size = 16
 
-        term_time_ms = 600
+        gap_threshold_ms = 600
         per_phone_ms = 100
         relocation = True
         # relocation = False
@@ -40,9 +40,10 @@ class MyTests(TestCase):
         )
         transcriber = Transcriber(
             phone_backend=EspeakBackend("en-us"),
-            term_time_ms=term_time_ms,
+            word_gap_threshold_ms=gap_threshold_ms,
             per_phone_ms=per_phone_ms,
             relocation=relocation,
+            check_phones=True,
         )
         print(f"{time.time() - start:.4f} sec")
 

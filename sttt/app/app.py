@@ -27,9 +27,10 @@ def run():
     )
     transcriber = Transcriber(
         phone_backend=EspeakBackend(espeak_lang),
-        term_time_ms=env.term_time_ms,
-        per_phone_ms=env.per_phone_ms,
-        relocation=env.relocation,
+        word_gap_threshold_ms=env.word_gap_threshold_ms,
+        per_phone_ms=env.phones_per_ms,
+        relocation=env.seg_relocation,
+        check_phones=env.phones_check,
     )
     translator = Translator(
         tsvc_base_url=env.tsvc_base_url,
@@ -56,19 +57,19 @@ def run():
             sentences = transcriber.transcribe(segments)
             write_file(
                 path_join(env.dst_path, f"{stem(out_filename)}._sent.json"),
-                json.dumps([s.model_dump(mode="json") for s in sentences], indent=2),
+                json.dumps([s.model_dump(mode="json") for s in sentences], indent=2, ensure_ascii=False),
             )
         else:
             segments = model.transcribe(audio_file_path=src_file_path, language=source_lang)
             log.info(f"Transcribed audio: {filename}")
             write_file(
                 path_join(env.dst_path, f"{stem(filename)}_seg.json"),
-                json.dumps([s.model_dump(mode="json") for s in segments], indent=2),
+                json.dumps([s.model_dump(mode="json") for s in segments], indent=2, ensure_ascii=False),
             )
             sentences = transcriber.transcribe(segments)
             write_file(
                 path_join(env.dst_path, f"{stem(filename)}_sent.json"),
-                json.dumps([s.model_dump(mode="json") for s in sentences], indent=2),
+                json.dumps([s.model_dump(mode="json") for s in sentences], indent=2, ensure_ascii=False),
             )
 
         write_file(path_join(env.dst_path, f"{stem(out_filename)}_src.vtt"), to_vtt_string(sentences))
