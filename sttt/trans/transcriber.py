@@ -8,19 +8,19 @@ class Transcriber:
     def __init__(
         self,
         phone_backend: EspeakBackend,
-        word_gap_threshold_ms: int,
-        per_phone_ms: int,
-        relocation: bool,
-        check_phones: bool,
+        silence_threshold_ms: int,
+        seg_relocation: bool,
+        phones_check: bool,
+        phones_per_ms: int,
     ):
-        self.phone_backend = phone_backend
-        self.word_gap_threshold_ms = word_gap_threshold_ms
-        self.per_phone_ms = per_phone_ms
-        self.relocation = relocation
-        self.check_phones = check_phones
+        self.__phone_backend = phone_backend
+        self.__silence_threshold_ms = silence_threshold_ms
+        self.__seg_relocation = seg_relocation
+        self.__phones_check = phones_check
+        self.__phones_per_ms = phones_per_ms
 
     def transcribe(self, segments: list[Segment]) -> list[Sentence]:
-        if self.relocation:
+        if self.__seg_relocation:
             return self.__relocate_words(segments)
         else:
             return [Sentence(start=s.start, end=s.end, text=s.text.strip()) for s in segments]
@@ -38,22 +38,22 @@ class Transcriber:
         tmp_words: list[Word] = []
         for idx, word in enumerate(words):
             if len(tmp_words) > 0:
-                if word.is_first or self.__check_gap_time(words, idx, True):
+                if word.is_first or self.__check_silence(words, idx, True):
                     sentences.append(merge_words(tmp_words))
                     tmp_words = []
-                elif self.check_phones and self.__check_gap_time_by_phones(words, idx):
+                elif self.__phones_check and self.__check_silence_by_phones(words, idx):
                     sentences.append(merge_words(tmp_words))
                     tmp_words = []
 
             tmp_words.append(word)
 
-            if word.check_last() or self.__check_gap_time(words, idx, False):
+            if word.check_last() or self.__check_silence(words, idx, False):
                 sentences.append(merge_words(tmp_words))
                 tmp_words = []
 
         return sentences
 
-    def __check_gap_time_by_phones(self, words: list[Word], idx: int) -> bool:
+    def __check_silence_by_phones(self, words: list[Word], idx: int) -> bool:
         """
         현재 word와 이전 word 사이 빈 시간이 term_time_ms를 초과하는지 체크하는 함수.
         최초 sentence인지 체크하기 위한 목적으로 사용한다.
@@ -66,12 +66,12 @@ class Transcriber:
         if idx == 0 or cur.check_last():
             return False
 
-        phones = phones_for_word(self.phone_backend, cur.text.strip())
-        est_pron_time = len(phones) * self.per_phone_ms
+        phones = phones_for_word(self.__phone_backend, cur.text.strip())
+        est_pron_time = len(phones) * self.__phones_per_ms
         remaining_time = cur.end - words[idx - 1].end - est_pron_time
-        return remaining_time > self.word_gap_threshold_ms
+        return remaining_time > self.__silence_threshold_ms
 
-    def __check_gap_time(self, words: list[Word], idx: int, is_first: bool) -> bool:
+    def __check_silence(self, words: list[Word], idx: int, is_first: bool) -> bool:
         cur = words[idx]
         last_idx = len(words) - 1
         if idx == 0:
@@ -81,14 +81,14 @@ class Transcriber:
             if cur.check_last():
                 return False
             prev = words[idx - 1]
-            return cur.start - prev.end > self.word_gap_threshold_ms
+            return cur.start - prev.end > self.__silence_threshold_ms
         else:
             if cur.is_first:
                 return False
             if idx == last_idx:
                 return True
             nxt = words[idx + 1]
-            return nxt.start - cur.end > self.word_gap_threshold_ms
+            return nxt.start - cur.end > self.__silence_threshold_ms
 
 
 def merge_words(words: list[Word]) -> Sentence:

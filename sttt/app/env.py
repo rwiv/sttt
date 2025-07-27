@@ -17,7 +17,7 @@ class Env(BaseModel):
     model_batch_size: int
 
     seg_relocation: bool
-    word_gap_threshold_ms: int
+    silence_threshold_ms: int
     phones_check: bool
     phones_per_ms: int
 
@@ -37,7 +37,7 @@ def get_env() -> Env:
         model_compute_type=os.getenv("MODEL_COMPUTE_TYPE", default_model_compute_type),
         model_batch_size=os.getenv("MODEL_BATCH_SIZE", default_model_batch_size),  # type: ignore
         seg_relocation=os.getenv("SEG_RELOCATION") == "true",
-        word_gap_threshold_ms=os.getenv("WORD_GAP_THRESHOLD_MS", default_word_gap_threshold_ms),  # type: ignore
+        silence_threshold_ms=os.getenv("SILENCE_THRESHOLD_MS", default_word_gap_threshold_ms),  # type: ignore
         phones_check=os.getenv("PHONES_CHECK") == "true",
         phones_per_ms=os.getenv("PHONES_PER_MS", default_phones_per_ms),  # type: ignore
         source_language=os.getenv("SOURCE_LANGUAGE", default_source_language),

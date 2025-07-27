@@ -7,7 +7,7 @@ from pyutils import log, stem, path_join, read_file, write_file
 
 from .env import get_env, Env
 from ..common import Sentence, Segment
-from ..trans import SttModel, Transcriber, Translator
+from ..trans import Transcriber, Translator, SttModelWhisperX, SttModelFasterWhisper
 from ..utils import to_vtt_string, set_espeak_path
 
 
@@ -20,17 +20,22 @@ def run():
 
     espeak_lang, source_lang, dest_lang = resolve_lang(env)
 
-    model = SttModel(
+    # model = SttModelFasterWhisper(
+    #     model_size=env.model_size,
+    #     compute_type=env.model_compute_type,
+    #     batch_size=env.model_batch_size,
+    # )
+    model = SttModelWhisperX(
         model_size=env.model_size,
         compute_type=env.model_compute_type,
         batch_size=env.model_batch_size,
     )
     transcriber = Transcriber(
         phone_backend=EspeakBackend(espeak_lang),
-        word_gap_threshold_ms=env.word_gap_threshold_ms,
-        per_phone_ms=env.phones_per_ms,
-        relocation=env.seg_relocation,
-        check_phones=env.phones_check,
+        silence_threshold_ms=env.silence_threshold_ms,
+        seg_relocation=env.seg_relocation,
+        phones_check=env.phones_check,
+        phones_per_ms=env.phones_per_ms,
     )
     translator = Translator(
         tsvc_base_url=env.tsvc_base_url,
