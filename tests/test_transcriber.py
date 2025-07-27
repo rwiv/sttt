@@ -28,11 +28,10 @@ class MyTests(TestCase):
         # batch_size = 8
         batch_size = 16
 
-        term_time_ms = 500
-        # term_time_ms = 700
-        # relocation = True
-        relocation = False
+        term_time_ms = 600
         per_phone_ms = 100
+        relocation = True
+        # relocation = False
 
         model = SttModel(
             model_size=model_size,

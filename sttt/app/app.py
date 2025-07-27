@@ -5,7 +5,7 @@ import sys
 from phonemizer.backend import EspeakBackend
 from pyutils import log, stem, path_join, read_file, write_file
 
-from .env import get_env
+from .env import get_env, Env
 from ..common import Sentence, Segment
 from ..trans import SttModel, Transcriber, Translator
 from ..utils import to_vtt_string, set_espeak_path
@@ -18,13 +18,15 @@ def run():
     if sys.platform.startswith("win"):
         set_espeak_path()
 
+    espeak_lang, source_lang, dest_lang = resolve_lang(env)
+
     model = SttModel(
         model_size=env.model_size,
         compute_type=env.model_compute_type,
         batch_size=env.model_batch_size,
     )
     transcriber = Transcriber(
-        phone_backend=EspeakBackend("en-us"),
+        phone_backend=EspeakBackend(espeak_lang),
         term_time_ms=env.term_time_ms,
         per_phone_ms=env.per_phone_ms,
         relocation=env.relocation,
@@ -33,6 +35,7 @@ def run():
         tsvc_base_url=env.tsvc_base_url,
         batch_size=env.ts_batch_size,
         ts_first=env.ts_first,
+        dest_lang=dest_lang,
     )
 
     os.makedirs(env.dst_path, exist_ok=True)
@@ -56,7 +59,7 @@ def run():
                 json.dumps([s.model_dump(mode="json") for s in sentences], indent=2),
             )
         else:
-            segments = model.transcribe(audio_file_path=src_file_path, language="en")
+            segments = model.transcribe(audio_file_path=src_file_path, language=source_lang)
             log.info(f"Transcribed audio: {filename}")
             write_file(
                 path_join(env.dst_path, f"{stem(filename)}_seg.json"),
@@ -74,3 +77,28 @@ def run():
         write_file(path_join(env.dst_path, f"{stem(out_filename)}_merge.vtt"), to_vtt_string(merged))
 
         log.info(f"Complete {filename}")
+
+
+def resolve_lang(env: Env):
+    if env.source_language == "en":
+        espeak_lang = "en-us"
+    elif env.source_language == "ko":
+        espeak_lang = "ko"
+    else:
+        raise ValueError("Invalid source language")
+
+    if env.source_language == "en":
+        source_lang = "en"
+    elif env.source_language == "ko":
+        source_lang = "ko"
+    else:
+        raise ValueError("Invalid source language")
+
+    if env.source_language == "en":
+        dest_lang = "ko"
+    elif env.source_language == "ko":
+        dest_lang = "en"
+    else:
+        raise ValueError("Invalid source language")
+
+    return espeak_lang, source_lang, dest_lang

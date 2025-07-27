@@ -7,9 +7,16 @@ from ..common import Sentence
 
 
 class Translator:
-    def __init__(self, tsvc_base_url: str, batch_size: int, ts_first: bool = True):
+    def __init__(
+        self,
+        tsvc_base_url: str,
+        batch_size: int,
+        dest_lang: str,
+        ts_first: bool = True,
+    ):
         self.__tsvc_base_url = tsvc_base_url
         self.__batch_size = batch_size
+        self.__dest_lang = dest_lang
         self.__ts_first = ts_first
 
     def translate(self, sentences: list[Sentence]) -> tuple[list[Sentence], list[Sentence]]:
@@ -38,5 +45,5 @@ class Translator:
     async def request_tsvc(self, texts: list[str]) -> list[str]:
         async with aiohttp.ClientSession() as session:
             url = f"{self.__tsvc_base_url}/translate/v1"
-            res = await session.post(url, json={"texts": texts, "dest": "ko"})
+            res = await session.post(url, json={"texts": texts, "dest": self.__dest_lang})
             return await res.json()

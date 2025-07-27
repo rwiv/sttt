@@ -5,9 +5,10 @@ from pydantic import BaseModel
 default_env = "dev"
 default_model_compute_type = "int8"
 default_model_batch_size = "8"
-default_term_time_ms = "500"
+default_term_time_ms = "600"
 default_per_phone_ms = "100"
 default_relocation = "true"
+default_source_language = "en"
 
 
 class Env(BaseModel):
@@ -18,6 +19,7 @@ class Env(BaseModel):
     term_time_ms: int
     per_phone_ms: int
     relocation: bool
+    source_language: str
     src_path: str
     dst_path: str
     tsvc_base_url: str
@@ -34,6 +36,7 @@ def get_env() -> Env:
         term_time_ms=os.getenv("SEG_TERM_TIME_MS", default_term_time_ms),  # type: ignore
         per_phone_ms=os.getenv("SEG_PER_PHONE_MS", default_per_phone_ms),  # type: ignore
         relocation=os.getenv("SEG_RELOCATION", default_relocation).lower() == "true",
+        source_language=os.getenv("SOURCE_LANGUAGE", default_source_language),
         src_path=os.getenv("APP_SRC_PATH") or None,  # type: ignore
         dst_path=os.getenv("APP_DST_PATH") or None,  # type: ignore
         tsvc_base_url=os.getenv("TSVC_BASE_URL") or None,  # type: ignore
