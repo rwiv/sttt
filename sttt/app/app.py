@@ -7,8 +7,8 @@ from pyutils import log, stem, path_join, read_file, write_file
 
 from .env import get_env, Env
 from ..common import Sentence, Segment
-from ..trans import Transcriber, Translator, SttModelWhisperX, SttModelFasterWhisper
-from ..utils import to_vtt_string, set_espeak_path
+from ..trans import Transcriber, Translator, create_model
+from ..utils import to_webvtt_string, set_espeak_path
 
 
 def run():
@@ -20,12 +20,8 @@ def run():
 
     espeak_lang, source_lang, dest_lang = resolve_lang(env)
 
-    # model = SttModelFasterWhisper(
-    #     model_size=env.model_size,
-    #     compute_type=env.model_compute_type,
-    #     batch_size=env.model_batch_size,
-    # )
-    model = SttModelWhisperX(
+    model = create_model(
+        model_type=env.model_type,
         model_size=env.model_size,
         compute_type=env.model_compute_type,
         batch_size=env.model_batch_size,
@@ -77,10 +73,10 @@ def run():
                 json.dumps([s.model_dump(mode="json") for s in sentences], indent=2, ensure_ascii=False),
             )
 
-        write_file(path_join(env.dst_path, f"{stem(out_filename)}_src.vtt"), to_vtt_string(sentences))
+        write_file(path_join(env.dst_path, f"{stem(out_filename)}_src.vtt"), to_webvtt_string(sentences))
         translated, merged = translator.translate(sentences)
-        write_file(path_join(env.dst_path, f"{stem(out_filename)}_ts.vtt"), to_vtt_string(translated))
-        write_file(path_join(env.dst_path, f"{stem(out_filename)}_merge.vtt"), to_vtt_string(merged))
+        write_file(path_join(env.dst_path, f"{stem(out_filename)}_ts.vtt"), to_webvtt_string(translated))
+        write_file(path_join(env.dst_path, f"{stem(out_filename)}_merge.vtt"), to_webvtt_string(merged))
 
         log.info(f"Complete {filename}")
 

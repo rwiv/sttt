@@ -5,8 +5,8 @@ from phonemizer.backend import EspeakBackend
 from pyutils import load_dotenv, path_join, find_project_root
 
 from sttt.app import get_env
-from sttt.trans import Transcriber, SttModelFasterWhisper, SttModelWhisperX
-from sttt.utils import to_vtt_string, set_espeak_path
+from sttt.trans import create_model, Transcriber
+from sttt.utils import to_webvtt_string, set_espeak_path
 
 set_espeak_path()
 load_dotenv(path_join(find_project_root(), "dev", ".env"))
@@ -33,16 +33,12 @@ class MyTests(TestCase):
         seg_relocation = True
         # seg_relocation = False
 
-        model = SttModelFasterWhisper(
+        model = create_model(
+            model_type="whisperx",
             model_size=model_size,
             compute_type=compute_type,
             batch_size=batch_size,
         )
-        # model = SttModelWhisperX(
-        #     model_size=model_size,
-        #     compute_type=compute_type,
-        #     batch_size=batch_size,
-        # )
         transcriber = Transcriber(
             phone_backend=EspeakBackend("en-us"),
             silence_threshold_ms=gap_threshold_ms,
@@ -58,5 +54,5 @@ class MyTests(TestCase):
         sentences = transcriber.transcribe(segments)
         print(f"{time.time() - start:.4f} sec")
 
-        vtt = to_vtt_string(sentences)
+        vtt = to_webvtt_string(sentences)
         print(vtt)

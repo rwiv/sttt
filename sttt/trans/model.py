@@ -1,6 +1,7 @@
 import gc
 import math
 from abc import ABC, abstractmethod
+from typing import Literal
 
 import torch
 import whisperx
@@ -102,3 +103,25 @@ class SttModelWhisperX(SttModel):
         del model_a
 
         return segments
+
+
+def create_model(
+    model_type: Literal["faster_whisper", "whisperx"],
+    model_size: str,
+    compute_type: str,
+    batch_size: int,
+) -> SttModel:
+    if model_type == "faster_whisper":
+        return SttModelFasterWhisper(
+            model_size=model_size,
+            compute_type=compute_type,
+            batch_size=batch_size,
+        )
+    elif model_type == "whisperx":
+        return SttModelWhisperX(
+            model_size=model_size,
+            compute_type=compute_type,
+            batch_size=batch_size,
+        )
+    else:
+        raise ValueError(f"Invalid model type: {model_type}")

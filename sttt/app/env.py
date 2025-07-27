@@ -1,4 +1,5 @@
 import os
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -12,6 +13,7 @@ default_source_language = "en"
 
 class Env(BaseModel):
     py_env: str
+    model_type: Literal["faster_whisper", "whisperx"]
     model_size: str
     model_compute_type: str
     model_batch_size: int
@@ -33,6 +35,7 @@ class Env(BaseModel):
 def get_env() -> Env:
     return Env(
         py_env=os.getenv("PY_ENV") or default_env,
+        model_type=os.getenv("MODEL_TYPE"),  # type: ignore
         model_size=os.getenv("MODEL_SIZE") or None,  # type: ignore
         model_compute_type=os.getenv("MODEL_COMPUTE_TYPE", default_model_compute_type),
         model_batch_size=os.getenv("MODEL_BATCH_SIZE", default_model_batch_size),  # type: ignore

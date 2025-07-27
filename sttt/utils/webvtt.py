@@ -1,25 +1,20 @@
 from ..common import Sentence
 
 
-def to_srt_chunk_string(seg: Sentence, num: int) -> str:
-    result = f"{num}\n"
-    result += f"{to_vtt_time_string(seg.start)} --> {to_vtt_time_string(seg.end)}\n"
+def to_webvtt_string(sentences: list[Sentence]):
+    vtt_str = "WEBVTT\n\n"
+    for chunk in sentences:
+        vtt_str += f"{_to_webvtt_block(chunk)}\n"
+    return vtt_str
+
+
+def _to_webvtt_block(seg: Sentence) -> str:
+    result = f"{_to_webvtt_timestamp(seg.start)} --> {_to_webvtt_timestamp(seg.end)}\n"
     result += f"{seg.text}\n"
     return result
 
 
-def to_srt_string(chunks: list[Sentence]):
-    srt_str = ""
-    for idx, chunk in enumerate(chunks):
-        srt_str += f"{to_srt_chunk_string(chunk, idx + 1)}\n"
-    return srt_str
-
-
-def to_vtt_string(sentences: list[Sentence]):
-    return "WEBVTT\n\n" + to_srt_string(sentences)
-
-
-def to_vtt_time_string(ms: int):
+def _to_webvtt_timestamp(ms: int):
     ph = 3600000  # milliseconds in an hour
     pm = 60000  # milliseconds in a minute
     ps = 1000  # milliseconds in a second

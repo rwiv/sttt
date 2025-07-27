@@ -1,6 +1,6 @@
 import sys
 
-from .model import SttModel, SttModelFasterWhisper, SttModelWhisperX
+from .model import create_model, SttModel, SttModelFasterWhisper, SttModelWhisperX
 from .transcriber import Transcriber
 from .translator import Translator
 
