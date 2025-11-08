@@ -12,12 +12,10 @@ def run_transcribe():
     env = get_env()
     log.info("Environment loaded", env.model_dump(mode="json"))
 
-    # Get video urls
-    url_file_path = env.urls_file_path
-    if url_file_path is None:
+    # Read video urls
+    if env.urls_file_path is None:
         raise ValueError("urls_file_path is None")
-    urls = []
-    with open(url_file_path, "r", encoding="utf-8") as f:
+    with open(env.urls_file_path, "r", encoding="utf-8") as f:
         urls = [line.strip() for line in f.readlines() if line.strip() != ""]
 
     # Download and extract audio files
