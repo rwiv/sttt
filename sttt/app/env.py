@@ -31,6 +31,8 @@ class Env(BaseModel):
     ts_batch_size: int
     ts_first: bool
 
+    urls_file_path: str | None
+
 
 def get_env() -> Env:
     return Env(
@@ -49,4 +51,5 @@ def get_env() -> Env:
         tsvc_base_url=os.getenv("TSVC_BASE_URL") or None,  # type: ignore
         ts_batch_size=os.getenv("TS_BATCH_SIZE"),  # type: ignore
         ts_first=os.getenv("TS_FIRST") == "true",
+        urls_file_path=os.getenv("URLS_FILE_PATH") or None,
     )

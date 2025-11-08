@@ -1,6 +1,7 @@
 import sys
 
-from .app import run
+from .transcribe_runner import run_transcribe
+from .translate_runner import run_translate
 from .env import get_env
 
 targets = [

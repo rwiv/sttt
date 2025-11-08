@@ -13,4 +13,4 @@ RUN apt-get install -y espeak-ng
 RUN pip install torch==2.7.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cu126
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["python3", "-m", "sttt"]
+ENTRYPOINT ["python3", "-m", "sttt", "translate"]

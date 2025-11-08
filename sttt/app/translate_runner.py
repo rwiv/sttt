@@ -11,7 +11,7 @@ from ..trans import Transcriber, Translator, create_model
 from ..utils import to_webvtt_string, set_espeak_path
 
 
-def run():
+def run_translate():
     env = get_env()
     log.info("Environment loaded", env.model_dump(mode="json"))
 
