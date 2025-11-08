@@ -18,9 +18,7 @@ def run_transcribe():
         raise ValueError("urls_file_path is None")
     urls = []
     with open(url_file_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-        for line in lines:
-            urls.append(line.strip())
+        urls = [line.strip() for line in f.readlines() if line.strip() != ""]
 
     # Download and extract audio files
     ydl_opts = {
