@@ -12,6 +12,8 @@ from ..common import Word, Segment
 
 CUDA_DEVICE = "cuda"
 VAD_MIN_SILENCE_MS = 1000
+# for streaming video
+COLLOQUIAL_PUNCTUATION_INITIAL_PROMPT = "Umm, let me think... Oh, really? Haha, that is so funny! I mean, yeah."
 
 
 class SttModel(ABC):
@@ -27,9 +29,18 @@ class SttModelFasterWhisper(SttModel):
         self.__batch_size = batch_size
 
     def transcribe(self, audio_file_path: str, language: str) -> list[Segment]:
-        model = WhisperModel(self.__model_size, compute_type=self.__compute_type, device=CUDA_DEVICE)
+        model = WhisperModel(
+            self.__model_size,
+            compute_type=self.__compute_type,
+            device=CUDA_DEVICE,
+        )
         batched_model = BatchedInferencePipeline(model=model)
         log.info("Load model")
+
+        initial_prompt = None
+        if language == "en":
+            initial_prompt = COLLOQUIAL_PUNCTUATION_INITIAL_PROMPT
+
         raw_segments, _ = batched_model.transcribe(
             audio=audio_file_path,
             language=language,
@@ -37,6 +48,7 @@ class SttModelFasterWhisper(SttModel):
             word_timestamps=True,
             vad_filter=True,
             vad_parameters=dict(min_silence_duration_ms=VAD_MIN_SILENCE_MS),
+            initial_prompt=initial_prompt,
         )
         segments = []
         for raw_seg in raw_segments:
@@ -68,7 +80,24 @@ class SttModelWhisperX(SttModel):
         self.__batch_size = batch_size
 
     def transcribe(self, audio_file_path: str, language: str) -> list[Segment]:
-        model = whisperx.load_model(self.__model_size, CUDA_DEVICE, compute_type=self.__compute_type)
+        asr_options = None
+        if language == "en":
+            asr_options = {"initial_prompt": COLLOQUIAL_PUNCTUATION_INITIAL_PROMPT}
+
+        if asr_options is not None:
+            model = whisperx.load_model(
+                self.__model_size,
+                CUDA_DEVICE,
+                compute_type=self.__compute_type,
+                asr_options=asr_options,
+            )
+        else:
+            model = whisperx.load_model(
+                self.__model_size,
+                CUDA_DEVICE,
+                compute_type=self.__compute_type,
+            )
+
         log.info("Load model")
         audio = whisperx.load_audio(audio_file_path)
         result = model.transcribe(audio, language=language, batch_size=self.__batch_size)
