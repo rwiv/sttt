@@ -9,10 +9,14 @@ default_model_batch_size = "8"
 default_word_gap_threshold_ms = "600"
 default_phones_per_ms = "100"
 default_source_language = "en"
+default_word_threshold = 12
 
 
 class Env(BaseModel):
     py_env: str
+    with_vtt: bool
+    word_threshold: int
+
     model_type: Literal["faster_whisper", "whisperx"]
     model_size: str
     model_compute_type: str
@@ -45,6 +49,8 @@ def get_env() -> Env:
         silence_threshold_ms=os.getenv("SILENCE_THRESHOLD_MS", default_word_gap_threshold_ms),  # type: ignore
         phones_check=os.getenv("PHONES_CHECK") == "true",
         phones_per_ms=os.getenv("PHONES_PER_MS", default_phones_per_ms),  # type: ignore
+        with_vtt=os.getenv("WITH_VTT") == "true",
+        word_threshold=os.getenv("WORD_THRESHOLD", default_word_threshold),  # type: ignore
         source_language=os.getenv("SOURCE_LANGUAGE", default_source_language),
         src_path=os.getenv("APP_SRC_PATH") or None,  # type: ignore
         dst_path=os.getenv("APP_DST_PATH") or None,  # type: ignore

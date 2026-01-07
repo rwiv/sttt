@@ -2,7 +2,6 @@ import json
 import os
 import sys
 
-from phonemizer.backend import EspeakBackend
 from pyutils import log, stem, path_join, read_file, write_file
 
 from .env import get_env, Env
@@ -18,7 +17,7 @@ def run_translate():
     if sys.platform.startswith("win"):
         set_espeak_path()
 
-    espeak_lang, source_lang, dest_lang = resolve_lang(env)
+    _, source_lang, dest_lang = resolve_lang(env)
 
     model = create_model(
         model_type=env.model_type,
@@ -27,9 +26,9 @@ def run_translate():
         batch_size=env.model_batch_size,
     )
     transcriber = Transcriber(
-        phone_backend=EspeakBackend(espeak_lang),
         silence_threshold_ms=env.silence_threshold_ms,
         seg_relocation=env.seg_relocation,
+        word_threshold=env.word_threshold,
         phones_check=env.phones_check,
         phones_per_ms=env.phones_per_ms,
     )

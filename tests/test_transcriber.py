@@ -1,7 +1,6 @@
 import time
 from unittest import TestCase
 
-from phonemizer.backend import EspeakBackend
 from pyutils import load_dotenv, path_join, find_project_root
 
 from sttt.app import get_env
@@ -40,10 +39,10 @@ class MyTests(TestCase):
             batch_size=batch_size,
         )
         transcriber = Transcriber(
-            phone_backend=EspeakBackend("en-us"),
             silence_threshold_ms=gap_threshold_ms,
             seg_relocation=seg_relocation,
-            phones_check=True,
+            word_threshold=10,
+            phones_check=False,
             phones_per_ms=phones_per_ms,
         )
         print(f"{time.time() - start:.4f} sec")
