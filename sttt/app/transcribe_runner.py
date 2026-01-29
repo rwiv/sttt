@@ -3,16 +3,12 @@ import os
 import yt_dlp
 from pyutils import log, stem, path_join, write_file
 
-from .env import get_env
-from ..common import Sentence
+from .env import get_env, Env
 from ..trans import create_model, Transcriber
 from ..utils import to_webvtt_string
 
 
-def run_transcribe():
-    env = get_env()
-    log.info("Environment loaded", env.model_dump(mode="json"))
-
+def download_videos(env: Env):
     # Read video urls
     if env.urls_file_path is None:
         raise ValueError("urls_file_path is None")
@@ -27,6 +23,15 @@ def run_transcribe():
     }
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download(urls)
+
+
+def run_transcribe():
+    env = get_env()
+    log.info("Environment loaded", env.model_dump(mode="json"))
+
+    # src_path에 파일이 존재하지 않으면 다운로드
+    if not os.listdir(env.src_path):
+        download_videos(env)
 
     model = create_model(
         model_type=env.model_type,

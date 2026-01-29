@@ -2,6 +2,6 @@ pydantic==2.11.7
 aiohttp==3.12.14
 whisperx==3.4.3
 phonemizer==3.3.0
-yt-dlp==2025.10.22
+yt-dlp==2026.1.29
 
 git+https://github.com/rwiv/pyutils.git@v0.3.5
